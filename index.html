@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>sShop — Shared Shop Application</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            :root {
+                --bg: #0d1117;
+                --surface: #161b22;
+                --surface2: #1c2128;
+                --border: #30363d;
+                --accent: #3fb950;
+                --accent-blue: #58a6ff;
+                --accent-glow: rgba(63, 185, 80, 0.15);
+                --text: #e6edf3;
+                --muted: #8b949e;
+                --mono: "JetBrains Mono", monospace;
+                --sans: "Inter", sans-serif;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--text);
+                font-family: var(--sans);
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* ─── NAV ─────────────────────────────── */
+            nav {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 2rem;
+                height: 56px;
+                background: rgba(13, 17, 23, 0.85);
+                backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-logo {
+                font-family: var(--mono);
+                font-size: 0.9rem;
+                color: var(--accent);
+                letter-spacing: 0.05em;
+            }
+            .nav-links {
+                display: flex;
+                gap: 1.5rem;
+                list-style: none;
+            }
+            .nav-links a {
+                font-size: 0.85rem;
+                color: var(--muted);
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+            .nav-links a:hover {
+                color: var(--text);
+            }
+
+            /* ─── HERO ────────────────────────────── */
+            .hero {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+                align-items: center;
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 6rem 2rem 5rem;
+            }
+            .hero-label {
+                font-family: var(--mono);
+                font-size: 0.75rem;
+                color: var(--accent);
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                margin-bottom: 0.75rem;
+            }
+            .hero-title {
+                font-size: clamp(2.4rem, 5vw, 3.6rem);
+                font-weight: 600;
+                line-height: 1.15;
+                letter-spacing: -0.02em;
+                margin-bottom: 1rem;
+            }
+            .hero-title span {
+                color: var(--accent-blue);
+            }
+            .hero-desc {
+                color: var(--muted);
+                font-size: 1.05rem;
+                max-width: 38ch;
+                margin-bottom: 2rem;
+            }
+            .btn-group {
+                display: flex;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.55rem 1.2rem;
+                border-radius: 6px;
+                font-size: 0.875rem;
+                font-weight: 500;
+                text-decoration: none;
+                cursor: pointer;
+                transition:
+                    opacity 0.2s,
+                    transform 0.15s;
+            }
+            .btn:hover {
+                opacity: 0.85;
+                transform: translateY(-1px);
+            }
+            .btn-primary {
+                background: var(--accent);
+                color: #0d1117;
+                border: none;
+            }
+            .btn-secondary {
+                background: transparent;
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+
+            /* ── コードツリーウィジェット */
+            .code-widget {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                overflow: hidden;
+                font-family: var(--mono);
+                font-size: 0.78rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            }
+            .code-widget-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.65rem 1rem;
+                background: var(--surface2);
+                border-bottom: 1px solid var(--border);
+            }
+            .dot {
+                width: 11px;
+                height: 11px;
+                border-radius: 50%;
+            }
+            .dot-r {
+                background: #ff5f57;
+            }
+            .dot-y {
+                background: #febc2e;
+            }
+            .dot-g {
+                background: #28c840;
+            }
+            .code-widget-title {
+                margin-left: 0.5rem;
+                font-size: 0.72rem;
+                color: var(--muted);
+            }
+            .code-body {
+                padding: 1rem 1.2rem;
+                line-height: 1.85;
+            }
+            .tree-line {
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+            .tree-indent {
+                color: var(--border);
+                user-select: none;
+            }
+            .c-dir {
+                color: var(--accent-blue);
+            }
+            .c-file {
+                color: var(--text);
+            }
+            .c-ext {
+                color: var(--muted);
+            }
+            .c-green {
+                color: var(--accent);
+            }
+            .c-cursor {
+                display: inline-block;
+                width: 8px;
+                height: 1em;
+                background: var(--accent);
+                animation: blink 0.9s step-end infinite;
+                vertical-align: text-bottom;
+                margin-left: 2px;
+            }
+            @keyframes blink {
+                50% {
+                    opacity: 0;
+                }
+            }
+
+            /* ─── SECTION COMMON ──────────────────── */
+            section {
+                padding: 5rem 2rem;
+            }
+            .section-inner {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+            .section-label {
+                font-family: var(--mono);
+                font-size: 0.72rem;
+                color: var(--accent);
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                margin-bottom: 0.5rem;
+            }
+            .section-title {
+                font-size: clamp(1.5rem, 3vw, 2rem);
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+            }
+            .section-desc {
+                color: var(--muted);
+                max-width: 54ch;
+                margin-bottom: 3rem;
+            }
+
+            /* ─── FEATURES ────────────────────────── */
+            #features {
+                border-top: 1px solid var(--border);
+            }
+            .feature-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.25rem;
+            }
+            .feature-card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 1.5rem;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+            }
+            .feature-card:hover {
+                border-color: var(--accent);
+                box-shadow:
+                    0 0 0 1px var(--accent-glow),
+                    0 4px 16px rgba(0, 0, 0, 0.3);
+            }
+            .feature-icon {
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+            .feature-card h3 {
+                font-size: 0.95rem;
+                margin-bottom: 0.4rem;
+            }
+            .feature-card p {
+                font-size: 0.85rem;
+                color: var(--muted);
+                line-height: 1.6;
+            }
+
+            /* ─── SCREENSHOTS ─────────────────────── */
+            #screenshots {
+                background: var(--surface);
+                border-top: 1px solid var(--border);
+            }
+            .screenshot-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.25rem;
+            }
+            .screenshot-card {
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: pointer;
+                transition:
+                    transform 0.2s,
+                    box-shadow 0.2s;
+                background: var(--bg);
+            }
+            .screenshot-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            }
+            /* ── 画像プレースホルダー */
+            .screenshot-placeholder {
+                width: 100%;
+                aspect-ratio: 16/10;
+                background: var(--surface2);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                color: var(--muted);
+                font-size: 0.8rem;
+                font-family: var(--mono);
+                position: relative;
+                overflow: hidden;
+            }
+            .screenshot-placeholder::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(48, 54, 61, 0.3) 20px,
+                    rgba(48, 54, 61, 0.3) 21px
+                );
+            }
+            .screenshot-placeholder .ph-icon {
+                font-size: 2rem;
+                opacity: 0.4;
+                position: relative;
+            }
+            .screenshot-placeholder .ph-label {
+                position: relative;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                padding: 0.25rem 0.75rem;
+                border-radius: 4px;
+                font-size: 0.72rem;
+            }
+            /* ── 実際の画像を使う場合 */
+            .screenshot-img {
+                width: 100%;
+                aspect-ratio: 16/10;
+                object-fit: cover;
+                display: block;
+                border-bottom: 1px solid var(--border);
+            }
+            .screenshot-caption {
+                padding: 0.75rem 1rem;
+                font-size: 0.8rem;
+                color: var(--muted);
+                font-family: var(--mono);
+            }
+
+            /* ── モーダル */
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 200;
+                background: rgba(0, 0, 0, 0.85);
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(4px);
+            }
+            .modal.open {
+                display: flex;
+            }
+            .modal-content {
+                max-width: min(90vw, 1000px);
+                border-radius: 8px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                position: relative;
+            }
+            .modal-img {
+                width: 100%;
+                display: block;
+            }
+            .modal-close {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                color: var(--text);
+                border-radius: 4px;
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            /* ─── TECH STACK ──────────────────────── */
+            #stack {
+                border-top: 1px solid var(--border);
+            }
+            .stack-groups {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1.5rem;
+            }
+            .stack-group h4 {
+                font-size: 0.72rem;
+                color: var(--muted);
+                font-family: var(--mono);
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid var(--border);
+            }
+            .badge-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .badge {
+                padding: 0.3rem 0.75rem;
+                border: 1px solid var(--border);
+                border-radius: 20px;
+                font-size: 0.78rem;
+                font-family: var(--mono);
+                color: var(--text);
+                background: var(--surface);
+                transition:
+                    border-color 0.2s,
+                    color 0.2s;
+            }
+            .badge:hover {
+                border-color: var(--accent-blue);
+                color: var(--accent-blue);
+            }
+            .badge.highlight {
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+
+            /* ─── ARCHITECTURE ────────────────────── */
+            #architecture {
+                background: var(--surface);
+                border-top: 1px solid var(--border);
+            }
+            .arch-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1px;
+                background: var(--border);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .arch-cell {
+                background: var(--surface2);
+                padding: 1.5rem;
+            }
+            .arch-cell-label {
+                font-family: var(--mono);
+                font-size: 0.7rem;
+                color: var(--accent);
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                margin-bottom: 0.5rem;
+            }
+            .arch-cell h4 {
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+            }
+            .arch-cell p {
+                font-size: 0.8rem;
+                color: var(--muted);
+            }
+
+            /* ─── ROLES ───────────────────────────── */
+            #roles {
+                border-top: 1px solid var(--border);
+            }
+            .role-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.85rem;
+            }
+            .role-table th {
+                text-align: left;
+                padding: 0.75rem 1rem;
+                font-family: var(--mono);
+                font-size: 0.72rem;
+                color: var(--muted);
+                letter-spacing: 0.08em;
+                border-bottom: 1px solid var(--border);
+            }
+            .role-table td {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid var(--border);
+                vertical-align: top;
+            }
+            .role-table tr:last-child td {
+                border-bottom: none;
+            }
+            .role-pill {
+                display: inline-block;
+                padding: 0.2rem 0.6rem;
+                border-radius: 4px;
+                font-family: var(--mono);
+                font-size: 0.72rem;
+            }
+            .role-0 {
+                background: rgba(88, 166, 255, 0.15);
+                color: var(--accent-blue);
+            }
+            .role-1 {
+                background: rgba(63, 185, 80, 0.15);
+                color: var(--accent);
+            }
+            .role-2 {
+                background: rgba(139, 148, 158, 0.15);
+                color: var(--muted);
+            }
+            .check {
+                color: var(--accent);
+            }
+            .cross {
+                color: #f85149;
+            }
+
+            /* ─── CTA ─────────────────────────────── */
+            #cta {
+                text-align: center;
+                padding: 6rem 2rem;
+                border-top: 1px solid var(--border);
+                background: radial-gradient(
+                    ellipse 60% 40% at 50% 100%,
+                    rgba(63, 185, 80, 0.07) 0%,
+                    transparent 70%
+                );
+            }
+            #cta h2 {
+                font-size: clamp(1.8rem, 4vw, 2.8rem);
+                margin-bottom: 0.75rem;
+            }
+            #cta p {
+                color: var(--muted);
+                margin-bottom: 2rem;
+            }
+
+            /* ─── FOOTER ──────────────────────────── */
+            footer {
+                border-top: 1px solid var(--border);
+                padding: 1.5rem 2rem;
+                text-align: center;
+                font-size: 0.78rem;
+                color: var(--muted);
+                font-family: var(--mono);
+            }
+
+            /* ─── RESPONSIVE ──────────────────────── */
+            @media (max-width: 720px) {
+                .hero {
+                    grid-template-columns: 1fr;
+                    padding: 3rem 1.25rem 2.5rem;
+                }
+                .hero-desc {
+                    max-width: 100%;
+                }
+                nav {
+                    padding: 0 1.25rem;
+                }
+                section {
+                    padding: 3.5rem 1.25rem;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .c-cursor {
+                    animation: none;
+                }
+                * {
+                    transition: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- ─── NAV ──────────────────────────────── -->
+        <nav>
+            <span class="nav-logo">// sShop</span>
+            <ul class="nav-links">
+                <li><a href="#features">機能</a></li>
+                <li><a href="#screenshots">画面</a></li>
+                <li><a href="#stack">技術</a></li>
+                <li><a href="#architecture">設計</a></li>
+                <li><a href="#roles">権限</a></li>
+            </ul>
+        </nav>
+
+        <!-- ─── HERO ──────────────────────────────── -->
+        <section style="padding: 0">
+            <div class="hero">
+                <!-- Left -->
+                <div>
+                    <p class="hero-label">// Spring Boot · Java · Thymeleaf</p>
+                    <h1 class="hero-title">
+                        Shared<br /><span>Shop</span><br />Application
+                    </h1>
+                    <p class="hero-desc">
+                        ECサイトの基本機能をひと通り実装した学習用Webアプリ。<br />
+                        会員管理・商品管理・買い物かご・注文フローを備えた、
+                        Spring Boot 製のフルスタックサンプルリポジトリです。
+                    </p>
+                    <div class="btn-group">
+                        <a
+                            href="https://github.com/y-okuda-tis/sShop-repo"
+                            class="btn btn-primary"
+                        >
+                            <!-- GitHub icon -->
+                            <svg
+                                width="15"
+                                height="15"
+                                viewBox="0 0 16 16"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+              0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+              -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+              .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+              -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0
+              1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+              1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
+              1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                                />
+                            </svg>
+                            リポジトリを見る
+                        </a>
+                        <a href="#screenshots" class="btn btn-secondary"
+                            >画面を確認する</a
+                        >
+                    </div>
+                </div>
+
+                <!-- Right: Code widget -->
+                <div class="code-widget">
+                    <div class="code-widget-header">
+                        <span class="dot dot-r"></span>
+                        <span class="dot dot-y"></span>
+                        <span class="dot dot-g"></span>
+                        <span class="code-widget-title">jp.co.sss.shop</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="tree-line">
+                            <span class="c-dir">📦 jp.co.sss.shop</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">├─</span
+                            ><span class="c-dir">controller/</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ ├─</span
+                            ><span class="c-dir">admin/</span>
+                            <span class="c-ext"
+                                >category, item, order, user</span
+                            >
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ ├─</span
+                            ><span class="c-dir">client/</span>
+                            <span class="c-ext">basket, item, order, user</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ └─</span
+                            ><span class="c-dir">login/</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">├─</span
+                            ><span class="c-dir">entity/</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ ├─</span
+                            ><span class="c-file"
+                                >User<span class="c-ext">.java</span></span
+                            >
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ ├─</span
+                            ><span class="c-file"
+                                >Item<span class="c-ext">.java</span></span
+                            >
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ ├─</span
+                            ><span class="c-file"
+                                >Order<span class="c-ext">.java</span></span
+                            >
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">│ └─</span
+                            ><span class="c-file"
+                                >OrderItem<span class="c-ext">.java</span></span
+                            >
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">├─</span
+                            ><span class="c-dir">filter/</span>
+                            <span class="c-ext">4段階アクセス制御</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">├─</span
+                            ><span class="c-dir">service/</span>
+                            <span class="c-ext">BeanTools, PriceCalc</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">├─</span
+                            ><span class="c-dir">validator/</span>
+                            <span class="c-ext">独自バリデーション</span>
+                        </div>
+                        <div class="tree-line">
+                            <span class="tree-indent">└─</span
+                            ><span class="c-file c-green"
+                                >SharedShopApplication<span class="c-ext"
+                                    >.java</span
+                                ></span
+                            ><span class="c-cursor"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── FEATURES ──────────────────────────── -->
+        <section id="features">
+            <div class="section-inner">
+                <p class="section-label">// features</p>
+                <h2 class="section-title">主な機能</h2>
+                <p class="section-desc">
+                    ECサイトとして必要な機能を一通り実装。学習・参照・拡張のベースとして活用できます。
+                </p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔐</div>
+                        <h3>ログイン・アカウント管理</h3>
+                        <p>
+                            メール＋パスワード認証、ログイン失敗5回でアカウントを30分ロックするセキュリティ機能付き。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛍️</div>
+                        <h3>買い物かご</h3>
+                        <p>
+                            商品の追加・個数変更・全削除をセッションで管理。表示時に最新在庫と突き合わせて自動調整。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <h3>注文フロー</h3>
+                        <p>
+                            届け先入力 → 支払方法選択 → 確認 →
+                            完了の4ステップ。確定時に二重の在庫チェックを実施。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🗂️</div>
+                        <h3>商品・カテゴリ管理</h3>
+                        <p>
+                            管理者が商品の登録・更新・削除、画像アップロードをGUI操作で実施。ソフトデリートで履歴を保持。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>会員管理</h3>
+                        <p>
+                            一般会員は自身の情報を管理。管理者は権限に応じて他会員を閲覧・編集・削除できます。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>注文履歴・管理</h3>
+                        <p>
+                            一般会員は自分の注文一覧を確認。管理者は全注文を日付降順で閲覧・詳細確認できます。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>商品一覧・検索</h3>
+                        <p>
+                            カテゴリフィルタと「新着順 /
+                            売れ筋順」の2ソートに対応。注文数を集計したJPQLクエリを実装。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">✅</div>
+                        <h3>カスタムバリデーション</h3>
+                        <p>
+                            メールアドレス重複・カテゴリ名重複・商品名重複を独自アノテーション＋バリデータで実装。
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>4段階アクセス制御</h3>
+                        <p>
+                            Filterチェーンで未ログイン・一般会員・運用管理者・システム管理者のアクセスを制御。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── SCREENSHOTS ────────────────────────── -->
+        <section id="screenshots">
+            <div class="section-inner">
+                <p class="section-label">// screenshots</p>
+                <h2 class="section-title">画面一覧</h2>
+                <p class="section-desc">
+                    各機能の実際の画面。クリックで拡大表示します。
+                </p>
+                <div class="screenshot-grid">
+                    <!-- ── 画像の差し込み方 ──────────────────────────────────
+           [方法A] 実際の画像を使う場合:
+             <img class="screenshot-img" src="./screenshots/login.png" alt="ログイン画面" />
+           [方法B] このプレースホルダーをそのまま残す場合:
+             下のdivブロックを使ってください
+      ─────────────────────────────────────────────────────── -->
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <!--<div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>-->
+                        <img
+                            class="screenshot-img"
+                            src="./screenshots/login.png"
+                            alt="ログイン画面"
+                        />
+                        <div class="screenshot-caption">
+                            login.html — ログイン画面
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <!--<div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>-->
+                        <img
+                            class="screenshot-img"
+                            src="./screenshots/top.png"
+                            alt="トップ画面（商品一覧）"
+                        />
+                        <div class="screenshot-caption">
+                            index.html — トップ（商品一覧）
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <!--<div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>-->
+                        <img
+                            class="screenshot-img"
+                            src="./screenshots/basket.png"
+                            alt="買い物かご"
+                        />
+                        <div class="screenshot-caption">
+                            basket/list.html — 買い物かご
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <!--<div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>-->
+                        <img
+                            class="screenshot-img"
+                            src="./screenshots/order_check.png"
+                            alt="注文確認画面"
+                        />
+                        <div class="screenshot-caption">
+                            order/check.html — 注文確認
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <!--<div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>-->
+                        <img
+                            class="screenshot-img"
+                            src="./screenshots/admin_menu.png"
+                            alt="管理者メニュー"
+                        />
+                        <div class="screenshot-caption">
+                            admin/admin_menu.html — 管理者メニュー
+                        </div>
+                    </div>
+
+                    <div class="screenshot-card" onclick="openModal(this)">
+                        <div class="screenshot-placeholder">
+                            <span class="ph-icon">🖼️</span>
+                            <span class="ph-label">// ここに画像を挿入</span>
+                        </div>
+                        <!-- <img class="screenshot-img" src="./screenshots/admin_item_list.png" alt="商品管理一覧" /> -->
+                        <div class="screenshot-caption">
+                            admin/item/list.html — 商品管理
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── TECH STACK ─────────────────────────── -->
+        <section id="stack">
+            <div class="section-inner">
+                <p class="section-label">// tech stack</p>
+                <h2 class="section-title">技術スタック</h2>
+                <p class="section-desc">
+                    Spring エコシステムをベースに、フロントエンドは Thymeleaf
+                    を採用。
+                </p>
+                <div class="stack-groups">
+                    <div class="stack-group">
+                        <h4>Backend</h4>
+                        <div class="badge-list">
+                            <span class="badge highlight">Java</span>
+                            <span class="badge highlight">Spring Boot</span>
+                            <span class="badge">Spring MVC</span>
+                            <span class="badge">Spring Data JPA</span>
+                            <span class="badge">Jakarta EE</span>
+                            <span class="badge">Bean Validation</span>
+                            <span class="badge">Servlet Filter</span>
+                            <span class="badge">Maven</span>
+                        </div>
+                    </div>
+                    <div class="stack-group">
+                        <h4>Frontend</h4>
+                        <div class="badge-list">
+                            <span class="badge highlight">Thymeleaf</span>
+                            <span class="badge">HTML5</span>
+                            <span class="badge">CSS3</span>
+                            <span class="badge">jQuery 1.10</span>
+                        </div>
+                    </div>
+                    <div class="stack-group">
+                        <h4>Database</h4>
+                        <div class="badge-list">
+                            <span class="badge highlight">Oracle DB</span>
+                            <span class="badge">Sequence Generator</span>
+                            <span class="badge">Soft Delete</span>
+                        </div>
+                    </div>
+                    <div class="stack-group">
+                        <h4>Design Pattern</h4>
+                        <div class="badge-list">
+                            <span class="badge">PRG Pattern</span>
+                            <span class="badge">Session管理</span>
+                            <span class="badge">Repository Pattern</span>
+                            <span class="badge">Service Layer</span>
+                            <span class="badge">Bean Conversion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── ARCHITECTURE ──────────────────────── -->
+        <section id="architecture">
+            <div class="section-inner">
+                <p class="section-label">// architecture</p>
+                <h2 class="section-title">設計のポイント</h2>
+                <p class="section-desc">
+                    標準的なMVC構造に加え、独自の工夫が随所に施されています。
+                </p>
+                <div class="arch-grid">
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">PRG Pattern</p>
+                        <h4>二重送信対策</h4>
+                        <p>
+                            POSTの完了後は必ずリダイレクト（GET）で完了画面を表示し、ブラウザバックによる再送信を防止。
+                        </p>
+                    </div>
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">Session管理</p>
+                        <h4>入力フォームの保持</h4>
+                        <p>
+                            入力 → 確認 →
+                            完了の多段フローで、フォーム情報とバリデーションエラーをセッションで引き渡す。
+                        </p>
+                    </div>
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">在庫管理</p>
+                        <h4>2段階在庫チェック</h4>
+                        <p>
+                            確認画面表示時と注文確定時の2回チェック。タイムラグによる在庫超過注文を防ぐ設計。
+                        </p>
+                    </div>
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">注文履歴</p>
+                        <h4>注文時単価の保存</h4>
+                        <p>
+                            OrderItemに購入時の単価を保存。後から価格が変わっても、注文時の正確な金額を参照可能。
+                        </p>
+                    </div>
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">Soft Delete</p>
+                        <h4>論理削除</h4>
+                        <p>
+                            会員・商品・カテゴリはDeleteFlagで論理削除。データは残るため注文履歴との整合性を保てる。
+                        </p>
+                    </div>
+                    <div class="arch-cell">
+                        <p class="arch-cell-label">Bean Conversion</p>
+                        <h4>BeanToolsサービス</h4>
+                        <p>
+                            Entity ↔ Form ↔ Bean
+                            間のコピー処理を1クラスに集約。コントローラのコードを簡潔に保つ。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── ROLES ──────────────────────────────── -->
+        <section id="roles">
+            <div class="section-inner">
+                <p class="section-label">// access control</p>
+                <h2 class="section-title">権限と機能マトリクス</h2>
+                <p class="section-desc">
+                    3種類の権限ごとにアクセスできる機能が異なります。
+                </p>
+                <table class="role-table">
+                    <thead>
+                        <tr>
+                            <th>機能</th>
+                            <th>
+                                <span class="role-pill role-2">一般会員</span>
+                            </th>
+                            <th>
+                                <span class="role-pill role-1">運用管理者</span>
+                            </th>
+                            <th>
+                                <span class="role-pill role-0"
+                                    >システム管理者</span
+                                >
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>商品閲覧・検索</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                        </tr>
+                        <tr>
+                            <td>買い物かご・注文</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>自身の会員情報管理</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                            <td class="check">✓</td>
+                        </tr>
+                        <tr>
+                            <td>商品・カテゴリ管理</td>
+                            <td class="cross">✗</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>注文管理（全件）</td>
+                            <td class="cross">✗</td>
+                            <td class="check">✓</td>
+                            <td class="cross">✗</td>
+                        </tr>
+                        <tr>
+                            <td>会員管理（全件）</td>
+                            <td class="cross">✗</td>
+                            <td class="check">✓（運用管理者以下）</td>
+                            <td class="check">✓（全権限）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ─── CTA ───────────────────────────────── -->
+        <section id="cta">
+            <h2>コードを読む・使う・拡張する</h2>
+            <p>ソースコードはGitHubで公開中です。</p>
+            <div class="btn-group" style="justify-content: center">
+                <a
+                    href="https://github.com/y-okuda-tis/sShop-repo"
+                    class="btn btn-primary"
+                >
+                    <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                    >
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+          .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+          -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0
+          1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+          1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
+          1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                        />
+                    </svg>
+                    GitHub で見る
+                </a>
+                <a href="#features" class="btn btn-secondary">機能一覧に戻る</a>
+            </div>
+        </section>
+
+        <!-- ─── FOOTER ─────────────────────────────── -->
+        <footer>
+            <span>sShop — shared-shop sample repository</span> ·
+            <span>Built with Spring Boot &amp; Thymeleaf</span>
+        </footer>
+
+        <!-- ─── MODAL ─────────────────────────────── -->
+        <div class="modal" id="modal" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <img class="modal-img" id="modal-img" src="" alt="" />
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+        </div>
+
+        <script>
+            function openModal(card) {
+                const img = card.querySelector(".screenshot-img");
+                if (!img) return; // プレースホルダーの場合はモーダルを開かない
+                const modal = document.getElementById("modal");
+                const modalImg = document.getElementById("modal-img");
+                modalImg.src = img.src;
+                modalImg.alt = img.alt;
+                modal.classList.add("open");
+                document.body.style.overflow = "hidden";
+            }
+            function closeModal() {
+                document.getElementById("modal").classList.remove("open");
+                document.body.style.overflow = "";
+            }
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeModal();
+            });
+
+            // スムーススクロール（navリンク）
+            document.querySelectorAll('a[href^="#"]').forEach((a) => {
+                a.addEventListener("click", (e) => {
+                    const target = document.querySelector(
+                        a.getAttribute("href"),
+                    );
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
