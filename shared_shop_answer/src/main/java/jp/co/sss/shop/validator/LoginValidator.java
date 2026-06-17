@@ -1,5 +1,7 @@
 package jp.co.sss.shop.validator;
 
+import java.time.LocalDateTime;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -29,6 +31,12 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 	@Autowired
 	HttpSession session;
 
+	/** ログイン失敗最大回数 */
+	private static final int MAX_LOGIN_ATTEMPTS = 5;
+
+	/** アカウントロック時間（分） */
+	private static final int ACCOUNT_LOCK_MINUTES = 30;
+
 	@Override
 	public void initialize(LoginCheck annotation) {
 		this.email = annotation.fieldEmail();
@@ -44,20 +52,93 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 
 		User user = userRepository.findByEmailAndDeleteFlag(emailProp, Constant.NOT_DELETED);
 
-		if (user != null && passwordProp.equals(user.getPassword())) {
-			UserBean userBean = new UserBean();
-
-			userBean.setId(user.getId());
-			userBean.setName(user.getName());
-			userBean.setAuthority(user.getAuthority());
-
-			// セッションスコープにログインしたユーザの情報を登録
-			session.setAttribute("user", userBean);
-			isValidFlg = true;
-		} else {
-			//ユーザ認証に失敗
+		if (user == null) {
+			// ユーザ認証に失敗
 			isValidFlg = false;
+			addConstraintViolation(context, "{login.missing.message}");
+		} else {
+			// アカウントロック状態を確認
+			if (isAccountLocked(user)) {
+				// アカウントがロック中
+				isValidFlg = false;
+				addConstraintViolation(context, "{account.locked.message}");
+			} else if (passwordProp.equals(user.getPassword())) {
+				// パスワード一致：ログイン成功
+				resetLoginFailureCount(user);
+				createUserSession(user);
+				isValidFlg = true;
+			} else {
+				// パスワード不一致：ログイン失敗
+				incrementLoginFailureCount(user);
+				isValidFlg = false;
+				addConstraintViolation(context, "{login.missing.message}");
+			}
 		}
 		return isValidFlg;
+	}
+
+	/**
+	 * アカウントがロック中かどうかを確認
+	 * @param user ユーザエンティティ
+	 * @return ロック中の場合true
+	 */
+	private boolean isAccountLocked(User user) {
+		if (user.getAccountLockedUntil() == null) {
+			return false;
+		}
+		LocalDateTime now = LocalDateTime.now();
+		return now.isBefore(user.getAccountLockedUntil());
+	}
+
+	/**
+	 * ログイン失敗回数をインクリメント
+	 * @param user ユーザエンティティ
+	 */
+	private void incrementLoginFailureCount(User user) {
+		int failureCount = (user.getLoginFailureCount() == null ? 0 : user.getLoginFailureCount()) + 1;
+		user.setLoginFailureCount(failureCount);
+
+		// 失敗回数が5回に達した場合、アカウントをロック
+		if (failureCount >= MAX_LOGIN_ATTEMPTS) {
+			LocalDateTime lockedUntil = LocalDateTime.now().plusMinutes(ACCOUNT_LOCK_MINUTES);
+			user.setAccountLockedUntil(lockedUntil);
+		}
+
+		userRepository.save(user);
+	}
+
+	/**
+	 * ログイン失敗回数をリセット
+	 * @param user ユーザエンティティ
+	 */
+	private void resetLoginFailureCount(User user) {
+		user.setLoginFailureCount(0);
+		user.setAccountLockedUntil(null);
+		userRepository.save(user);
+	}
+
+	/**
+	 * ユーザセッション情報を作成
+	 * @param user ユーザエンティティ
+	 */
+	private void createUserSession(User user) {
+		UserBean userBean = new UserBean();
+		userBean.setId(user.getId());
+		userBean.setName(user.getName());
+		userBean.setAuthority(user.getAuthority());
+
+		// セッションスコープにログインしたユーザの情報を登録
+		session.setAttribute("user", userBean);
+	}
+
+	/**
+	 * 制約違反メッセージを追加
+	 * @param context コンテキスト
+	 * @param message メッセージキー
+	 */
+	private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+		context.disableDefaultConstraintViolation();
+		context.buildConstraintViolationWithTemplate(message)
+				.addConstraintViolation();
 	}
 }
