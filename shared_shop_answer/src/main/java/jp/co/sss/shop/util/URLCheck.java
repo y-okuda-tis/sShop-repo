@@ -73,6 +73,16 @@ public class URLCheck {
 	}
 
 	/**
+	 * 管理者向けURLかどうかを判定（/admin/ で始まるURL）
+	 * 
+	 * @param requestURL リクエストURL
+	 * @return true：管理者向けURL、false：その他
+	 */
+	public static boolean isURLForAdminOnly(String requestURL) {
+		return requestURL.startsWith("/admin/");
+	}
+
+	/**
 	 * 一般会員 リクエストURLがチェック対象であるかを判定
 	 * 
 	 * @param requestURL リクエストURL
