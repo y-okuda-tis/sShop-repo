@@ -71,7 +71,11 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 				// パスワード不一致：ログイン失敗
 				incrementLoginFailureCount(user);
 				isValidFlg = false;
-				addConstraintViolation(context, "{login.missing.message}");
+				if (isAccountLocked(user)) {
+					addConstraintViolation(context, "{account.locked.message}");
+				} else {
+					addConstraintViolation(context, "{login.missing.message}");
+				}
 			}
 		}
 		return isValidFlg;
