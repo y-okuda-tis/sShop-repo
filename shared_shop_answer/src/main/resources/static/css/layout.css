@@ -1,5 +1,17 @@
 ﻿@charset "UTF-8";
 
+:root {
+	--color-bg-base: #f4f7f6;
+	--color-primary-dark: #0a192f;
+	--color-accent-blue: #00f0ff;
+	--color-text-main: #333333;
+	--color-text-light: #ffffff;
+	--color-border: #e2e8f0;
+	--color-card-bg: rgba(255, 255, 255, 0.85);
+	--color-hover-shadow: rgba(0, 240, 255, 0.3);
+	--font-main: 'Noto Sans JP', sans-serif;
+}
+
 /* ---- 共通 ---- */
 /* スキルアップテクニック1-1
  * html要素に対しmin-heightプロパティを付けることで、
@@ -72,16 +84,42 @@ body > .container {
 }
 
 /* ---- ヘッダー ---- */
-header .container {
+.header-container {
+	background-color: var(--color-primary-dark);
+	padding: 15px 0;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	color: var(--color-text-light);
+}
+.header-container .container {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 }
-header {
-	background: #87ceeb;
-	padding: 10px 0;
+.header-container .site_title {
+	font-size: 2em;
+	font-weight: 700;
+	margin: 0;
+	color: var(--color-text-light);
+	letter-spacing: 2px;
+	text-shadow: 0 0 10px var(--color-accent-blue);
 }
-.admin header {
-	background: #ff8669;
+.header-container .user_nav .user_info {
+	padding-top: 0;
+	color: var(--color-text-light);
+}
+.header-container .user_nav .user_info a {
+	color: var(--color-accent-blue);
+	text-decoration: none;
+	font-weight: bold;
+	transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.header-container .user_nav .user_info a:hover {
+	color: var(--color-text-light);
+	text-shadow: 0 0 8px var(--color-accent-blue);
+	text-decoration: none;
+}
+.admin .header-container {
+	background-color: #ff8669; /* 管理者用は既存色をベースにするか適宜調整 */
 }
 
 /* スキルアップテクニック3
@@ -138,39 +176,54 @@ header {
 
 /* ---- ナビゲーションバー ---- */
 .navi_area {
-	background: #edf9fe;
+	background: var(--color-primary-dark);
+	border-top: 1px solid var(--color-accent-blue);
+	box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 .navi_menu {
 	width: 960px;
-	padding:12px 0;
+	padding: 0;
 	margin: 0 auto;
+	display: flex;
 }
 .navi_menu li {
-	display: inline-block;
-	width: 24%;
+	flex: 1;
 }
 .navi_menu a {
-	display: inline-block;
+	display: block;
 	width: 100%;
-	font-size: 1.5em;
-	line-height: 2.5em;
-	border: 1px solid #5fb4d9;
+	font-size: 1.2em;
+	line-height: 3em;
 	text-align: center;
 	text-decoration: none;
-	background: #fff;
-	transition: 0.18s;
+	color: var(--color-text-light);
+	background: transparent;
+	transition: all 0.3s ease;
+	border-right: 1px solid rgba(255,255,255,0.1);
+	position: relative;
+	overflow: hidden;
+}
+.navi_menu li:last-of-type a {
+	border-right: none;
+}
+.navi_menu a::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	background: var(--color-accent-blue);
+	transform: scaleX(0);
+	transition: transform 0.3s ease;
 }
 .navi_menu a:hover {
-	background: #3d98bf;
-	color: #fff;
-	text-shadow: 1px 1px 1px #12526d;
-	border-color : #3d98bf;
+	color: var(--color-accent-blue);
+	background: rgba(0, 240, 255, 0.05);
+	text-shadow: 0 0 5px var(--color-accent-blue);
 }
-.navi_menu li:first-of-type a{
-	border-radius: 6px 0px 0px 6px;
-}
-.navi_menu li:last-of-type a{
-	border-radius: 0px 6px 6px 0px;
+.navi_menu a:hover::after {
+	transform: scaleX(1);
 }
 
 /* ---- サイドバー ---- */
@@ -360,20 +413,29 @@ aside.admin_menu {
  * footer要素は画面、もしくはページの最下部に表示されるようになります。
  */
 footer {
-	background-color: #87ceeb;
+	background-color: var(--color-primary-dark);
+	color: var(--color-text-light);
 	text-align: center;
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+	border-top: 2px solid var(--color-accent-blue);
+	box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .admin footer {
 	background: #ff8669;
+	border-top-color: #ff8669;
+}
+
+.footer-container {
+	padding: 10px 0;
 }
 
 small {
 	height: 30px;
 	line-height:30px;
-	text-shadow: 1px 1px 1px #fff;
+	text-shadow: none;
 	font-size: 8pt;
+	color: var(--color-text-light);
 }

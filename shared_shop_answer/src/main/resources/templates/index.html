@@ -6,7 +6,14 @@
 <meta charset="UTF-8" />
 </head>
 <body class="user index">
-	<div>
+	<div class="hero-banner">
+		<div class="hero-content">
+			<h2 class="hero-title">協創する未来のECサイト</h2>
+			<p class="hero-subtitle">私たちと一緒に、新しいショッピング体験を創り上げましょう。</p>
+		</div>
+	</div>
+
+	<div class="section-header">
 		<h2 class="title">
 				<span th:if="${sortType==1}" th:text="#{sort.latest.title}"></span>
 				<span th:if="${sortType==2 || sortType==null}" th:text="#{sort.hotsell.title}"></span>
@@ -20,12 +27,16 @@
 		<!--/* 1件分の商品情報 */-->
 		<div class="item">
 			<div class="item_name" th:text="${item.name}"></div>
-			<a th:href="@{/client/item/detail/}+${item.id}">
-			    <img th:src="@{/images/{image}(image=${item.image})}" th:if="${item.image != null}" />
-			    <img th:src="@{/images/common/no_image.jpg}" th:if="${item.image == null}" />
-			</a>
+			<div class="image-wrapper">
+				<a th:href="@{/client/item/detail/}+${item.id}">
+					<img th:src="@{/images/{image}(image=${item.image})}" th:if="${item.image != null}" />
+					<img th:src="@{/images/common/no_image.jpg}" th:if="${item.image == null}" />
+				</a>
+			</div>
+			<div class="description" th:text="${item.price} + '円'"></div>
+			<div class="user-rating">★ 4.5</div>
 		</div>
-	</div>
 	</th:block>
+	</div>
 </body>
 </html>

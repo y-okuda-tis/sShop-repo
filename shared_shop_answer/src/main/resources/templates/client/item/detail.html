@@ -12,12 +12,12 @@
 	<h2 th:class="title" th:text="#{item}+#{title.detail}"></h2>
 
 	<div class="info_form_area" th:object="${item}">
-		<div class="item_detail_area">
-			<div class="item_image_area">
+		<div class="item_detail_area item">
+			<div class="item_image_area image-wrapper">
 				<img th:if="*{image != null}" th:src="@{/images/{image}(image=*{image})}"></img>
 				<img th:if="*{image == null}" th:src="@{/images/common/no_image.jpg}"></img>
 			</div>
-			<dl class="item_detail_list">
+			<dl class="item_detail_list description">
 				<dt>[[#{data.item.name}]]</dt>
 				<dd th:text="*{name}"></dd>
 				<dt>[[#{data.item.price}]]</dt>
@@ -30,6 +30,8 @@
 				<dd th:text="*{categoryName}"></dd>
 				<dt>[[#{data.description}]]</dt>
 				<dd th:text="*{description}"></dd>
+				<dt>ユーザー評価</dt>
+				<dd class="user-rating-detail" style="color: #ffd700; font-size: 1.2em; text-shadow: 1px 1px 2px #000;">★ 4.5</dd>
 			</dl>
 		</div>
 		<div class="detail_button_area">
