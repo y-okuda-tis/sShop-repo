@@ -7,8 +7,22 @@
 <link rel="stylesheet" type="text/css" th:href="@{/css/layout.css}" />
 <link rel="stylesheet" type="text/css" th:href="@{/css/stylesheet.css}" />
 <title  th:replace="${title}"></title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          futureBlue: "#00f0ff",
+          futureDark: "#0a192f",
+          futureCard: "rgba(10, 25, 47, 0.7)",
+        }
+      }
+    }
+  }
+</script>
 </head>
-<body class="user">
+<body class="bg-futureDark text-slate-200 min-h-screen flex flex-col font-sans">
 	<!--/* ヘッダー */-->
 	<header>
 		<div th:replace="~{common/header :: layout-header}"></div>
@@ -17,11 +31,11 @@
 	<nav th:if="${session.user == null or session.user.authority == 2}" class="navi_area">
 		<div th:replace="~{common/menu :: layout-menu}"></div>
 	</nav>
-	<div class="container">
+	<div class="max-w-6xl mx-auto w-full px-4 flex-grow flex flex-col md:flex-row gap-6 my-6">
 		<!--/* サイドバー */-->
 		<aside th:replace="~{common/sidebar :: layout-sidebar}"></aside>
 		<!--/* メイン */-->
-		<article class="main">
+		<article class="flex-grow w-full">
 			<div th:replace="${body}"></div>
 		</article>
 	</div>

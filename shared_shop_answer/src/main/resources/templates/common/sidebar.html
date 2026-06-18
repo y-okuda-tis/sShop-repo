@@ -4,46 +4,47 @@
 <meta charset="UTF-8" />
 </head>
 <body>
-<aside th:fragment="layout-sidebar" th:class="${session.user == null or session.user.authority == 2} ? ${'search'} : ${'admin_menu'}" >
+<aside th:fragment="layout-sidebar" class="w-full md:w-64 shrink-0 bg-futureCard backdrop-blur-md rounded-xl border border-futureBlue/30 p-4 shadow-lg shadow-futureBlue/5 h-fit">
 	<!--/* 検索メニュー(非会員、一般会員用) */-->
-	<div  class="search_area" th:if="${session.user == null or session.user.authority == 2}">
-		<h2 th:class="title" th:text="#{category.select.title}"></h2>
-		<div class="form">
+	<div class="mb-6" th:if="${session.user == null or session.user.authority == 2}">
+		<h2 class="text-lg font-bold text-futureBlue mb-4 flex items-center gap-2 border-b border-futureBlue/20 pb-2" th:text="#{category.select.title}"></h2>
+		<div>
 			<!-- 商品一覧画面以外で表示 -->
-			<form th:if="${sortType == null}" th:action="@{/client/item/list/1}">
-				<select name="categoryId">
+			<form th:if="${sortType == null}" th:action="@{/client/item/list/1}" class="flex flex-col gap-3">
+				<select name="categoryId" class="bg-slate-800 border border-slate-600 text-slate-200 rounded-md p-2 focus:outline-none focus:border-futureBlue focus:ring-1 focus:ring-futureBlue">
 					<option th:value="#{constants.category.select.none.no}" th:text="#{constants.category.select.none}"></option>
 					<option th:each="category: ${categories}"
 						th:value="${category.id}" th:text="${category.name}"></option>
-				</select> <input type="submit" th:value="#{select}" />
+				</select>
+				<input type="submit" th:value="#{select}" class="bg-transparent border border-futureBlue text-futureBlue hover:bg-futureBlue hover:text-futureDark font-bold py-2 px-4 rounded-md transition-colors cursor-pointer" />
 			</form>
 			<!-- 商品一覧画面上で表示 -->
-			<form th:unless="${sortType == null}" th:action="@{/client/item/list/} + ${sortType}">
-				<select name="categoryId">
+			<form th:unless="${sortType == null}" th:action="@{/client/item/list/} + ${sortType}" class="flex flex-col gap-3">
+				<select name="categoryId" class="bg-slate-800 border border-slate-600 text-slate-200 rounded-md p-2 focus:outline-none focus:border-futureBlue focus:ring-1 focus:ring-futureBlue">
 					<option th:value="#{constants.category.select.none.no}" th:text="#{constants.category.select.none}"></option>
 					<option th:each="category: ${categories}"
 						th:value="${category.id}" th:text="${category.name}" th:selected="${category.id} == ${categoryId}"></option>
-				</select> <input type="submit" th:value="#{select}" />
+				</select>
+				<input type="submit" th:value="#{select}" class="bg-transparent border border-futureBlue text-futureBlue hover:bg-futureBlue hover:text-futureDark font-bold py-2 px-4 rounded-md transition-colors cursor-pointer" />
 			</form>
 		</div>
 	</div>
 
 	<!--/* メニュー(運用管理者、及びシステム管理者用) */-->
 	<div th:if="${session.user != null and session.user.authority != 2}">
-
-		<h2 th:class="title" th:text="#{admin.menu}"></h2>
-		<ul class="menu">
+		<h2 class="text-lg font-bold text-orange-400 mb-4 flex items-center gap-2 border-b border-orange-400/20 pb-2" th:text="#{admin.menu}"></h2>
+		<ul class="flex flex-col gap-2">
 			<li>
-				<a th:href="@{/admin/user/list}" th:class="display_list" th:text="#{admin.menu.user.list}"></a>
+				<a th:href="@{/admin/user/list}" class="block px-3 py-2 rounded-md hover:bg-orange-400/10 hover:text-orange-300 transition-colors" th:text="#{admin.menu.user.list}"></a>
 			</li>
 			<li th:if="${session.user.authority == 1}">
-				<a th:href="@{/admin/order/list}" th:class="display_list" th:text="#{admin.menu.order.list}"></a>
+				<a th:href="@{/admin/order/list}" class="block px-3 py-2 rounded-md hover:bg-orange-400/10 hover:text-orange-300 transition-colors" th:text="#{admin.menu.order.list}"></a>
 			</li>
 			<li th:if="${session.user.authority == 1}">
-				<a th:href="@{/admin/item/list}" th:class="display_list" th:text="#{admin.menu.item.list}"></a>
+				<a th:href="@{/admin/item/list}" class="block px-3 py-2 rounded-md hover:bg-orange-400/10 hover:text-orange-300 transition-colors" th:text="#{admin.menu.item.list}"></a>
 			</li>
 			<li th:if="${session.user.authority == 1}">
-				<a th:href="@{/admin/category/list}" th:class="display_list" th:text="#{admin.menu.category.list}"></a>
+				<a th:href="@{/admin/category/list}" class="block px-3 py-2 rounded-md hover:bg-orange-400/10 hover:text-orange-300 transition-colors" th:text="#{admin.menu.category.list}"></a>
 			</li>
 		</ul>
 	</div>
