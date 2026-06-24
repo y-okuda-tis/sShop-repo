@@ -6,12 +6,12 @@
 </head>
 
 <body>
-	<ul th:fragment="layout-menu" th:class="navi_menu">
-		<li><a th:href="@{/}" th:text="#{top}"></a></li>
-		<li><a th:href="@{/client/item/list/1}" th:text="#{item}+#{title.list}"></a></li>
-		<li><a th:href="@{/client/basket/list}" th:text="#{basket}"></a></li>
+	<ul th:fragment="layout-menu" class="max-w-6xl mx-auto flex flex-wrap md:flex-nowrap border-b border-futureBlue/20 bg-futureDark/50">
+		<li class="flex-1"><a th:href="@{/}" class="block w-full py-3 text-center text-slate-300 hover:text-futureBlue hover:bg-futureBlue/10 transition-colors border-r border-futureBlue/10" th:text="#{top}"></a></li>
+		<li class="flex-1"><a th:href="@{/client/item/list/1}" class="block w-full py-3 text-center text-slate-300 hover:text-futureBlue hover:bg-futureBlue/10 transition-colors border-r border-futureBlue/10" th:text="#{item}+#{title.list}"></a></li>
+		<li class="flex-1"><a th:href="@{/client/basket/list}" class="block w-full py-3 text-center text-slate-300 hover:text-futureBlue hover:bg-futureBlue/10 transition-colors border-r border-futureBlue/10" th:text="#{basket}"></a></li>
 		<th:block th:if="${session.user != null}">
-			<li><a th:href="@{/client/order/list}" th:text="#{order}+#{title.list}"></a></li>
+			<li class="flex-1"><a th:href="@{/client/order/list}" class="block w-full py-3 text-center text-slate-300 hover:text-futureBlue hover:bg-futureBlue/10 transition-colors" th:text="#{order}+#{title.list}"></a></li>
 		</th:block>
 	</ul>
 </body>

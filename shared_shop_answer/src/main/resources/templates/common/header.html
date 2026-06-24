@@ -4,17 +4,21 @@
 <meta charset="UTF-8" />
 </head>
 <body>
-<div th:fragment="layout-header" class="container">
-	<h1 th:class="site_title" th:text="#{shop.title}"></h1>
-	<div th:if="${session.user != null and session.user.authority == 2}" class="user_info">
-		<a th:href="@{/client/user/detail}" th:text="${session.user.name}"></a>さん | <a th:href="@{/logout}" th:text="#{logout}"></a>
+<header th:fragment="layout-header" class="bg-futureDark/90 backdrop-blur-md border-b border-futureBlue/30 sticky top-0 z-50 shadow-lg shadow-futureBlue/10">
+	<div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+		<h1 class="text-2xl font-bold tracking-widest text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]" th:text="#{shop.title}"></h1>
+		<nav class="text-sm">
+			<div th:if="${session.user != null and session.user.authority == 2}" class="flex gap-2 items-center text-slate-300">
+				<a th:href="@{/client/user/detail}" class="text-futureBlue hover:text-white hover:drop-shadow-[0_0_8px_rgba(0,240,255,1)] transition-all" th:text="${session.user.name}"></a>さん <span class="text-slate-600">|</span> <a th:href="@{/logout}" class="text-futureBlue hover:text-white hover:drop-shadow-[0_0_8px_rgba(0,240,255,1)] transition-all" th:text="#{logout}"></a>
+			</div>
+			<div th:if="${session.user != null and (session.user.authority == 0 or session.user.authority == 1)}" class="flex gap-2 items-center text-slate-300">
+				<a th:href="@{/admin/user/detail/{id}(id=${session.user.id})}" class="text-orange-400 hover:text-white hover:drop-shadow-[0_0_8px_rgba(251,146,60,1)] transition-all" th:text="${session.user.name}"></a>さん <span class="text-slate-600">|</span> <a th:href="@{/logout}" class="text-orange-400 hover:text-white hover:drop-shadow-[0_0_8px_rgba(251,146,60,1)] transition-all" th:text="#{logout}"></a>
+			</div>
+			<div th:if="${session.user == null}" class="flex gap-2 items-center text-slate-300">
+				<a th:href="@{/login}" class="text-futureBlue hover:text-white hover:drop-shadow-[0_0_8px_rgba(0,240,255,1)] transition-all" th:text="#{login}"></a> <span class="text-slate-600">|</span> <a th:href="@{/client/user/regist/input/init}" class="text-futureBlue hover:text-white hover:drop-shadow-[0_0_8px_rgba(0,240,255,1)] transition-all" th:text="#{client.regist}"></a>
+			</div>
+		</nav>
 	</div>
-	<div th:if="${session.user != null and (session.user.authority == 0 or session.user.authority == 1)}" class="user_info">
-		<a th:href="@{/admin/user/detail/{id}(id=${session.user.id})}" th:text="${session.user.name}"></a>さん | <a th:href="@{/logout}" th:text="#{logout}"></a>
-	</div>
-	<div th:if="${session.user == null}" class="user_info">
-		<a th:href="@{/login}" th:text="#{login}"></a> | <a th:href="@{/client/user/regist/input/init}" th:text="#{client.regist}"></a>
-	</div>
-</div>
+</header>
 </body>
 </html>
